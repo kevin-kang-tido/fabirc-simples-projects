@@ -1,0 +1,26 @@
+[
+    {
+        "query":"GetAllAssets",
+        "args":[]
+    }
+    ,{
+        "invoke": "InitLedger", 
+        "args": []
+    },
+    {
+        // id string,
+        //  color string, 
+        //  size int, 
+        //  owner string,
+        //   appraisedValue int
+        
+        "invoke":"CreateAsset",
+        "args":[
+            "asset111",
+            "yallow",
+            20,
+            "king",
+            200
+        ]
+    }
+]
