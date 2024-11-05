@@ -1,0 +1,24 @@
+OrdererOrgs:
+  - Name: OrderingService
+    Domain: kang-network.com
+    Specs:
+      - Hostname: orderer
+
+PeerOrgs:
+  - Name: kang1
+    Domain: be1.kang-network.com
+    EnableNodeOUs: true
+    Template:
+      Count: 2
+
+    Users: 
+      Count: 1
+      
+  - Name: kang2
+    Domain: be2.kang-network.com
+    EnableNodeOUs: true
+    Template:
+      Count: 1
+
+    Users: 
+      Count: 1

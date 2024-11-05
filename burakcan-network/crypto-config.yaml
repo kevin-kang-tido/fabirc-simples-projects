@@ -1,0 +1,24 @@
+OrdererOrgs:
+  - Name: OrderingService
+    Domain: burakcan-network.com
+    Specs:
+      - Hostname: orderer
+
+PeerOrgs:
+  - Name: Burakcan1
+    Domain: be1.burakcan-network.com
+    EnableNodeOUs: true
+    Template:
+      Count: 2
+
+    Users: 
+      Count: 1
+      
+  - Name: Burakcan2
+    Domain: be2.burakcan-network.com
+    EnableNodeOUs: true
+    Template:
+      Count: 1
+
+    Users: 
+      Count: 1

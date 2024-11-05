@@ -1,0 +1,180 @@
+Organizations:
+
+  - &OrdererOrg
+    Name: OrderingService
+    ID: OrdererMSP
+    MSPDir: crypto-config/ordererOrganizations/kang-network.com/msp
+    
+    Policies:
+            Readers:
+                Type: Signature
+                Rule: "OR('OrdererMSP.member')"
+            Writers:
+                Type: Signature
+                Rule: "OR('OrdererMSP.member')"
+            Admins:
+                Type: Signature
+                Rule: "OR('OrdererMSP.admin')"
+
+    OrdererEndpoints:
+            - orderer.kang-network.com:7050
+
+  - &kang1
+    Name: kang1MSP
+    ID: kang1MSP
+    MSPDir: crypto-config/peerOrganizations/be1.kang-network.com/msp
+    Policies:
+          Readers:
+              Type: Signature
+              Rule: "OR('kang1MSP.admin', 'kang1MSP.peer', 'kang1MSP.client')"
+          Writers:
+              Type: Signature
+              Rule: "OR('kang1MSP.admin', 'kang1MSP.client')"
+          Admins:
+              Type: Signature
+              Rule: "OR('kang1MSP.admin')" 
+          Endorsement:
+              Type: Signature
+              Rule: "OR('kang1MSP.peer')"     
+
+    AnchorPeers:
+      - Host: peer0.be1.kang-network.com
+        Port: 7051
+
+  - &kang2
+    Name: kang2MSP
+    ID: kang2MSP
+    MSPDir: crypto-config/peerOrganizations/be2.kang-network.com/msp
+    Policies:
+          Readers:
+              Type: Signature
+              Rule: "OR('kang2MSP.admin', 'kang2MSP.peer', 'kang2MSP.client')"
+          Writers:
+              Type: Signature
+              Rule: "OR('kang2MSP.admin', 'kang2MSP.client')"
+          Admins:
+              Type: Signature
+              Rule: "OR('kang2MSP.admin')" 
+          Endorsement:
+              Type: Signature
+              Rule: "OR('kang2MSP.peer')" 
+
+    AnchorPeers:
+      - Host: peer0.be2.kang-network.com
+        Port: 7051
+
+Capabilities:
+
+    Channel: &ChannelCapabilities
+
+        V2_0: true
+
+
+    Orderer: &OrdererCapabilities
+    
+        V2_0: true
+
+    Application: &ApplicationCapabilities
+
+        V2_0: true
+# Orderer
+
+Orderer: &OrdererDefaults
+
+    OrdererType: solo
+    Addresses: 
+        - orderer.kang-network.com:7050
+    BatchTimeout: 2s
+    BatchSize:
+        MaxMessageCount: 10
+        AbsoluteMaxBytes: 99 MB
+        PreferredMaxBytes: 512 KB
+    Kafka:
+        Brokers: 
+            - 127.0.0.1:9092
+
+    Organizations:
+    Policies:
+        Readers:
+            Type: ImplicitMeta
+            Rule: "ANY Readers"
+        Writers:
+            Type: ImplicitMeta
+            Rule: "ANY Writers"
+        Admins:
+            Type: ImplicitMeta
+            Rule: "MAJORITY Admins"
+        BlockValidation:
+            Type: ImplicitMeta
+            Rule: "ANY Writers"
+Channel: &ChannelDefaults
+
+    Policies:
+
+        Readers:
+            Type: ImplicitMeta
+            Rule: "ANY Readers"
+
+        Writers:
+            Type: ImplicitMeta
+            Rule: "ANY Writers"
+        Admins:
+            Type: ImplicitMeta
+            Rule: "MAJORITY Admins"
+
+
+    Capabilities:
+        <<: *ChannelCapabilities
+# Application
+
+Application: &ApplicationDefaults
+
+    Organizations:
+    Policies:
+        Readers:
+            Type: ImplicitMeta
+            Rule: "ANY Readers"
+        Writers:
+            Type: ImplicitMeta
+            Rule: "ANY Writers"
+        Admins:
+            Type: ImplicitMeta
+            Rule: "MAJORITY Admins"
+        LifecycleEndorsement:
+            Type: ImplicitMeta
+            Rule: "MAJORITY Endorsement"
+        Endorsement:
+            Type: ImplicitMeta
+            Rule: "MAJORITY Endorsement"
+
+    Capabilities:
+        <<: *ApplicationCapabilities
+
+Profiles:
+    OrdererGenesis:
+      <<: *ChannelDefaults
+      Capabilities:
+        <<: *ChannelCapabilities
+      Orderer:
+        <<: *OrdererDefaults
+        Organizations:
+          - *OrdererOrg
+        Capabilities:
+          <<: *OrdererCapabilities
+      Consortiums:
+        MyFirstConsortium:
+          Organizations:
+            - *kang1 
+            - *kang2
+            
+    ChannelDemo:
+      Consortium: MyFirstConsortium
+      <<: *ChannelDefaults
+      Application:
+        <<: *ApplicationDefaults
+        Organizations:
+          - *kang1
+          - *kang2
+          
+        Capabilities:
+          <<: *ApplicationCapabilities
